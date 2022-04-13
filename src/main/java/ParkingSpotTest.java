@@ -6,54 +6,76 @@ import java.util.UUID;
 
 class ParkingSpotTest {
 
-    IParkingSpot ps;
+    IParkingGarage ps;
 
     @BeforeEach
-    void startUp() {
-        ps = new ParkingSpot();
+    void testStartUp() {
+        ps = new ParkingGarage(100, 21);
     }
 
     @Test
-    void markSpot() {
-        ps.markSpot(5);
-        assertFalse(ps.getEmptySpots()[5]);
+    void testMarkSpot() {
+        assertTrue(ps.markSpot(5));
+        assertTrue(ps.IsSpotOccupied(5));
+        assertFalse(ps.markSpot(5));
+        assertFalse(ps.IsSpotOccupied(6));
     }
 
     @Test
-    void reserveSpot() {
-        ps.reserveSpot(3);
-        assertFalse(ps.getEmptySpots()[3]);
+    void testReserveSpot() {
+        assertTrue(ps.reserveSpot(5));
+        assertTrue(ps.IsSpotReserved(5));
+        assertFalse(ps.reserveSpot(5));
+        assertFalse(ps.IsSpotReserved(6));
     }
 
     @Test
-    void getNextSpot() {
+    void testGetNextSpot() {
         assertEquals(0, ps.getNextSpot());
-        ps.markSpot(0);
+        assertTrue(ps.markSpot(0));
         assertEquals(1, ps.getNextSpot());
-        ps.markSpot(1);
+        assertTrue(ps.markSpot(1));
         assertEquals(2, ps.getNextSpot());
-        ps.markSpot(2);
+        assertTrue(ps.markSpot(2));
+        assertEquals(3, ps.getNextSpot());
+        assertTrue(ps.markSpot(4));
+        assertEquals(3, ps.getNextSpot());
     }
 
     @Test
-    void getNextHSpot() {
-        assertEquals(40, ps.getNextHSpot());
-        ps.markSpot(40);
-        assertEquals(41, ps.getNextHSpot());
-        ps.markSpot(41);
-        assertEquals(42, ps.getNextHSpot());
-        ps.markSpot(42);
+    void testGetNextHandyCapSpot() {
+        assertEquals(80, ps.getNextHandyCapSpot());
+        ps.markSpot(80);
+        assertEquals(81, ps.getNextHandyCapSpot());
+        ps.markSpot(81);
+        assertEquals(82, ps.getNextHandyCapSpot());
+        ps.markSpot(82);
     }
 
     @Test
-    void createTicket() {
+    void testCreateTicket() {
         UUID T1 = ps.createTicket(1);
         UUID T2 = ps.createTicket(2);
         UUID T3 = ps.createTicket(6);
+        UUID T4 = ps.createTicket(true);
+        UUID T5 = ps.createTicket(false);
+        assertEquals(80, ps.getTicketSpot(T4));
+        assertEquals(0, ps.getTicketSpot(T5));
+        assertTrue(ps.IsHandyCapSpot(ps.getTicketSpot(T4)));
+        assertFalse(ps.IsHandyCapSpot(ps.getTicketSpot(T5)));
+        assertNotEquals(T1, T2);
+        assertNotEquals(T1, T3);
+        assertNotEquals(T3, T2);
+    }
 
-        assertNotEquals(T1,T2);
-        assertNotEquals(T1,T3);
-        assertNotEquals(T3,T2);
-
+    @Test
+    void testGetFreeSpots() {
+        assertTrue(ps.markSpot(5));
+        assertTrue(ps.markSpot(6));
+        int[] freeSpots = ps.getFreeSpots();
+        for (int i = 0; i < freeSpots.length; i++) {
+            assertNotEquals(5, freeSpots[i]);
+            assertNotEquals(6, freeSpots[i]);
+        }
     }
 }
