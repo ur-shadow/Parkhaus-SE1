@@ -1,4 +1,4 @@
-# belegte/freie Parkplätze vermerken
+# Belegte/freie Parkplätze vermerken
 > markierung eines Parkplatzes sobald ein Parkplatz frei wird bzw. belegt wird.
 
 # Tickets erstellen
